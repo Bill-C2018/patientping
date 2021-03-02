@@ -173,11 +173,14 @@ if __name__ == "__main__":
 #    name2 = "Sean Bean"
 #    name2 = "Izabella Scorupco"
 
+    if len(sys.argv) < 3:
+        print ("Invalid args")
+        exit(1)
+        
     name1 = sys.argv[1]
     name2 = sys.argv[2]
     
-    if not name1  or not name2:
-        print ("Invalid input")
+
     
     mydict = ReadMovieData("data.txt")
     depth = 1
