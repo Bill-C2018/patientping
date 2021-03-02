@@ -95,19 +95,37 @@ def BuildSeperationChain(setOfActorsA,mydict,listOfMoviesB,listOfMoviesA):
 
         seen.append(name)
         la = GetMoviesWithActor(name,mydict)
-        setOfActorsA = setOfActorsA + list(SetOfCommonActors(la, mydict))
+        #
+        # this issue would be solved with sets but 
+        # using a set here keeps changing the order
+        #
+        tempList = list(SetOfCommonActors(la, mydict))
+        for i in tempList:
+            if i in seen:
+                continue
+            setOfActorsA.append(i) 
         res = compareListOfMovies(la,listOfMoviesB)
         if len(res) > 0:
             break 
             
     return (name,res)
 
+'''
+    walk through the actor names connecting to name 1 until 
+    you find one that also connects to name 2. At this point 
+    we are at the deepest point .. we can now walk back up that list
+    in reverse building the result string as we go 
+'''
 def DoTheWork(name1,name2,mydict):
     
     depth = 1
     text = ""
     listOfMoviesA = GetMoviesWithActor(name1,mydict)
     listOfMoviesB = GetMoviesWithActor(name2,mydict)
+    #if an actor is entered that does not exist bail
+    if len(listOfMoviesA) == 0 or len(listOfMoviesB) == 0:
+        return ("Invalid input",0)
+    
     res = compareListOfMovies(listOfMoviesA,listOfMoviesB)
     '''
     if both were in the same movie we can end it here
@@ -124,10 +142,14 @@ def DoTheWork(name1,name2,mydict):
 #
 #   we now have the "deepest" link in the chain . walk it back 
 #   up to build the output
-#
+#   if the movie listed at this point is null (restuple[1]
+#   there was no match for the pair of names
 #=============================================
         if restuple[1]:
             text = text + f"{restuple[0]} was in {restuple[1].pop()} with {name2}" 
+        else:
+            return ("Not found",0) 
+            
         while True:
             depth += 1
             name2 = restuple[0]
